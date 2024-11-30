@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Namamasko Po</title>
+  <style>
+    /* Global Styles */
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(to bottom, #ffecd2, #fcb69f);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .container {
+      width: 100%;
+      max-width: 350px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+      padding: 30px;
+      text-align: center;
+      transform: translateY(-50px);
+      animation: fadeInUp 0.6s ease-out forwards;
+    }
+
+    /* Title and paragraph */
+    h1 {
+      font-size: 32px;
+      margin-bottom: 20px;
+      color: #ff7f50;
+      letter-spacing: 2px;
+      animation: slideIn 1s ease-out;
+    }
+    p {
+      font-size: 18px;
+      color: #555;
+      margin-bottom: 30px;
+    }
+
+    /* Input Fields */
+    input {
+      width: 80%;
+      padding: 12px;
+      margin-bottom: 20px;
+      font-size: 16px;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+    input:focus {
+      border-color: #ff7f50;
+      box-shadow: 0 0 5px rgba(255, 127, 80, 0.5);
+    }
+
+    /* Buttons */
+    button {
+      background: #ff7f50;
+      color: white;
+      font-size: 18px;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+      animation: pulse 1s infinite;
+    }
+    button:hover {
+      background: #ff4500;
+      transform: translateY(-3px);
+    }
+
+    /* Step transitions */
+    .hidden {
+      display: none;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(30px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideIn {
+      0% { transform: translateX(-30px); }
+      100% { transform: translateX(0); }
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    /* Thank you message */
+    #thankYouMessage {
+      font-size: 20px;
+      font-weight: bold;
+      color: #ff7f50;
+      animation: fadeInUp 1s ease-out;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="step1">
+    <h1>NAMAMASKO PO</h1>
+    <p>PLS ENTER ANY AMOUNT</p>
+    <input type="number" id="amountInput" placeholder="Enter amount">
+    <button id="sendAmountButton">SEND AMOUNT</button>
+  </div>
+
+  <div class="container hidden" id="step2">
+    <p>ENTER YOUR NAME</p>
+    <input type="text" id="nameInput" placeholder="Your name">
+    <button id="sendNameButton">SEND NAME</button>
+  </div>
+
+  <div class="container hidden" id="step3">
+    <p id="thankYouMessage"></p>
+  </div>
+
+  <script>
+    const step1 = document.getElementById('step1');
+    const step2 = document.getElementById('step2');
+    const step3 = document.getElementById('step3');
+
+    const amountInput = document.getElementById('amountInput');
+    const nameInput = document.getElementById('nameInput');
+    const thankYouMessage = document.getElementById('thankYouMessage');
+
+    const sendAmountButton = document.getElementById('sendAmountButton');
+    const sendNameButton = document.getElementById('sendNameButton');
+
+    let enteredAmount = 0;
+
+    // Handle sending amount
+    sendAmountButton.addEventListener('click', () => {
+      enteredAmount = amountInput.value.trim();
+      if (enteredAmount > 0) {
+        step1.classList.add('hidden');
+        step2.classList.remove('hidden');
+      } else {
+        alert('Please enter a valid amount!');
+      }
+    });
+
+    // Handle sending name
+    sendNameButton.addEventListener('click', () => {
+      const enteredName = nameInput.value.trim();
+      if (enteredName) {
+        step2.classList.add('hidden');
+        step3.classList.remove('hidden');
+        thankYouMessage.textContent = `THANK YOU, ${enteredName.toUpperCase()}, FOR ₱${enteredAmount}!`;
+
+        // Send data to Discord via webhook
+        const discordWebhookUrl = 'https://discord.com/api/webhooks/1312278600900284496/Pa_qaTd9MXkdj2CPxdvZ-1bDK1OtSWhCMoCAK9Av4wz25aXXxxTtmdFxCjAhmQhZMq-e'; // Replace with your webhook URL
+        fetch(discordWebhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            content: `🎄 Someone contributed! \n💵 Amount: ₱${enteredAmount}\n👤 From: ${enteredName}`,
+          }),
+        }).then(response => {
+          if (response.ok) {
+            console.log('Message sent to Discord successfully!');
+          } else {
+            console.error('Failed to send message to Discord.');
+          }
+        });
+      } else {
+        alert('Please enter your name!');
+      }
+    });
+  </script>
+</body>
+</html>
